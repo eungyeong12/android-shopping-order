@@ -18,6 +18,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import woowacourse.shopping.receiver.AlarmHelper
+import woowacourse.shopping.ui.navigation.Payment
+import woowacourse.shopping.ui.navigation.toDeepLinkUri
 
 @Composable
 fun PaymentRoute(
@@ -35,8 +37,13 @@ fun PaymentRoute(
     val hasLeftPaymentScreen = remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        AlarmHelper.schedulePaymentReminder(context)
+    LaunchedEffect(viewModel.orderProducts) {
+        if (viewModel.orderProducts.isNotEmpty()) {
+            AlarmHelper.schedulePaymentReminder(
+                context = context,
+                paymentUri = Payment(viewModel.orderProducts).toDeepLinkUri(),
+            )
+        }
     }
 
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) {

@@ -21,7 +21,6 @@ import woowacourse.shopping.model.order.shipping.ShippingPolicy
 import woowacourse.shopping.model.product.Money
 import woowacourse.shopping.repository.CartRepository
 import woowacourse.shopping.repository.CouponRepository
-import woowacourse.shopping.repository.ProductRepository
 import woowacourse.shopping.repository.ShoppingRepositoryProvider
 import woowacourse.shopping.ui.navigation.OrderProduct
 import woowacourse.shopping.ui.navigation.OrderProductListType
@@ -35,7 +34,6 @@ import kotlin.reflect.typeOf
 class PaymentViewModel(
     savedStateHandle: SavedStateHandle,
     private val cartRepository: CartRepository,
-    private val productRepository: ProductRepository,
     private val couponRepository: CouponRepository,
     private val shippingPolicy: ShippingPolicy,
     private val dateTimeProvider: DateTimeProvider,
@@ -44,7 +42,7 @@ class PaymentViewModel(
         savedStateHandle.toRoute(
             typeMap = mapOf(typeOf<List<OrderProduct>>() to OrderProductListType),
         )
-    private val selectedProducts: List<OrderProduct> = route.orderProducts
+    val orderProducts: List<OrderProduct> = route.orderProducts
 
     private val _uiState = MutableStateFlow(PaymentUiState())
     val uiState: StateFlow<PaymentUiState> = _uiState.asStateFlow()
@@ -58,57 +56,20 @@ class PaymentViewModel(
     }
 
     private fun initializeOrderItems() {
-        if (selectedProducts.isNotEmpty()) {
-            orderItems =
-                selectedProducts.map { product ->
-                    OrderItem(
-                        productId = product.productId,
-                        price = Money(product.price),
-                        quantity = product.quantity,
-                    )
-                }
-            calculateAmounts()
+        if (orderProducts.isEmpty()) {
+            updateInitialLoadError(IllegalStateException("주문 상품 정보가 없습니다."))
             return
         }
 
-        viewModelScope.launch {
-            val totalCount =
-                cartRepository
-                    .count()
-                    .getOrElse { throwable ->
-                        updateInitialLoadError(throwable)
-                        return@launch
-                    }
-            if (totalCount == 0) return@launch
-
-            val cartItems =
-                cartRepository
-                    .getCartPage(0, totalCount)
-                    .getOrElse { throwable ->
-                        updateInitialLoadError(throwable)
-                        return@launch
-                    }.items
-
-            val productIds = cartItems.map { it.productId }.toSet()
-            val productsById =
-                productRepository
-                    .findAllByIds(productIds)
-                    .getOrElse { throwable ->
-                        updateInitialLoadError(throwable)
-                        return@launch
-                    }
-
-            orderItems =
-                cartItems.mapNotNull { item ->
-                    val product = productsById[item.productId] ?: return@mapNotNull null
-                    OrderItem(
-                        productId = item.productId,
-                        price = product.price,
-                        quantity = item.quantity,
-                    )
-                }
-            calculateAmounts()
-        }
+        orderItems =
+            orderProducts.map { product ->
+                OrderItem(
+                    productId = product.productId,
+                    price = Money(product.price),
+                    quantity = product.quantity,
+                )
+            }
+        calculateAmounts()
     }
 
     private fun updateInitialLoadError(throwable: Throwable) {
@@ -260,7 +221,6 @@ class PaymentViewModelFactory : ViewModelProvider.Factory {
         return PaymentViewModel(
             savedStateHandle = savedStateHandle,
             cartRepository = ShoppingRepositoryProvider.cartRepository,
-            productRepository = ShoppingRepositoryProvider.productRepository,
             couponRepository = ShoppingRepositoryProvider.couponRepository,
             shippingPolicy = FixedShippingPolicy(),
             dateTimeProvider = SystemDateTimeProvider(),

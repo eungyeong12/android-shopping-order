@@ -104,6 +104,7 @@ fun AppNavHost(innerPadding: PaddingValues) {
                 deepLinks =
                     listOf(
                         navDeepLink { uriPattern = "shopping://payment" },
+                        navDeepLink { uriPattern = "shopping://payment?orderProducts={orderProducts}" },
                     ),
                 typeMap = mapOf(typeOf<List<OrderProduct>>() to OrderProductListType),
             ) {

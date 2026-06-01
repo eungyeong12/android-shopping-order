@@ -4,15 +4,22 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 
 object AlarmHelper {
     private const val ALARM_REQUEST_CODE = 999
     private const val FIVE_MINUTES_IN_MILLIS = 5 * 60 * 1000L
+    const val EXTRA_PAYMENT_URI = "payment_uri"
 
-    fun schedulePaymentReminder(context: Context) {
+    fun schedulePaymentReminder(
+        context: Context,
+        paymentUri: Uri,
+    ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, PaymentReminderReceiver::class.java)
+        val intent =
+            Intent(context, PaymentReminderReceiver::class.java)
+                .putExtra(EXTRA_PAYMENT_URI, paymentUri.toString())
         val pendingIntent =
             PendingIntent.getBroadcast(
                 context,

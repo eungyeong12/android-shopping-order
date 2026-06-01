@@ -6,9 +6,9 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import woowacourse.shopping.R
 import woowacourse.shopping.local.SettingsPreferences
 
@@ -34,11 +34,12 @@ class PaymentReminderReceiver : BroadcastReceiver() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        // Deep link to Payment screen
+        val paymentUri = intent.getStringExtra(AlarmHelper.EXTRA_PAYMENT_URI) ?: "shopping://payment"
+
         val deepLinkIntent =
             Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("shopping://payment"),
+                paymentUri.toUri(),
             ).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             }

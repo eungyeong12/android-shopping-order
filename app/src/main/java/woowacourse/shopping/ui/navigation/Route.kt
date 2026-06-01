@@ -2,6 +2,7 @@ package woowacourse.shopping.ui.navigation
 
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.net.toUri
 import androidx.navigation.NavType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -59,3 +60,5 @@ data class CartRecommendation(
 data class Payment(
     val orderProducts: List<OrderProduct> = emptyList(),
 )
+
+fun Payment.toDeepLinkUri(): Uri = "shopping://payment?orderProducts=${OrderProductListType.serializeAsValue(orderProducts)}".toUri()
