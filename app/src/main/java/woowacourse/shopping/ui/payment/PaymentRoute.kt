@@ -26,12 +26,12 @@ fun PaymentRoute(
     onBackClick: () -> Unit,
     onOrderCompleted: () -> Unit,
     modifier: Modifier = Modifier,
-) {
-    val context = LocalContext.current
-    val viewModel: PaymentViewModel =
+    viewModel: PaymentViewModel =
         viewModel(
             factory = PaymentViewModelFactory(),
-        )
+        ),
+) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
     val hasLeftPaymentScreen = remember { mutableStateOf(false) }

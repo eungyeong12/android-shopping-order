@@ -19,11 +19,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun ProductDetailRoute(
     onCloseClick: () -> Unit,
     onLastViewedProductClick: (Long) -> Unit,
-) {
-    val viewModel: ProductDetailViewModel =
+    viewModel: ProductDetailViewModel =
         viewModel(
             factory = ProductDetailViewModelFactory(),
-        )
+        ),
+) {
     val snackbarHostState = remember { SnackbarHostState() }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current

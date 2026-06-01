@@ -13,13 +13,8 @@ import woowacourse.shopping.local.SettingsPreferences
 fun SettingsRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel = settingsViewModel(),
 ) {
-    val context = LocalContext.current
-    val settingsPreferences = remember { SettingsPreferences(context) }
-    val viewModel: SettingsViewModel =
-        viewModel(
-            factory = SettingsViewModel.factory(settingsPreferences),
-        )
     val isPaymentReminderEnabled by viewModel.isPaymentReminderEnabled.collectAsStateWithLifecycle()
 
     SettingsScreen(
@@ -27,5 +22,14 @@ fun SettingsRoute(
         onTogglePaymentReminder = viewModel::togglePaymentReminder,
         onBackClick = onBackClick,
         modifier = modifier,
+    )
+}
+
+@Composable
+private fun settingsViewModel(): SettingsViewModel {
+    val context = LocalContext.current
+    val settingsPreferences = remember { SettingsPreferences(context) }
+    return viewModel(
+        factory = SettingsViewModel.factory(settingsPreferences),
     )
 }

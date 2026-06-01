@@ -25,12 +25,12 @@ fun CartRoute(
     cartFlowEntry: NavBackStackEntry,
     onBackClick: () -> Unit,
     onOrderClick: (List<OrderProduct>) -> Unit,
-) {
-    val viewModel: CartViewModel =
+    viewModel: CartViewModel =
         viewModel(
             viewModelStoreOwner = cartFlowEntry,
             factory = CartViewModelFactory(),
-        )
+        ),
+) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

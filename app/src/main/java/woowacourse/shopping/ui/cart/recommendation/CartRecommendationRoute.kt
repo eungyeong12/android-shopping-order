@@ -24,17 +24,16 @@ fun CartRecommendationRoute(
     onOrderProductsReady: (List<OrderProduct>) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-) {
-    val cartViewModel: CartViewModel =
+    cartViewModel: CartViewModel =
         viewModel(
             viewModelStoreOwner = cartFlowEntry,
             factory = CartViewModelFactory(),
-        )
-    val recommendationViewModel: CartRecommendationViewModel =
+        ),
+    recommendationViewModel: CartRecommendationViewModel =
         viewModel(
             factory = CartRecommendationViewModelFactory(),
-        )
-
+        ),
+) {
     val uiState by recommendationViewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current

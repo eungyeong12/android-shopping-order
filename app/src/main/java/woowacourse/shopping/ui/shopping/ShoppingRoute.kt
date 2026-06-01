@@ -14,11 +14,11 @@ fun ShoppingRoute(
     onCartClick: () -> Unit,
     onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
-) {
-    val viewModel: ShoppingViewModel =
+    viewModel: ShoppingViewModel =
         viewModel(
             factory = ShoppingViewModelFactory(),
-        )
+        ),
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
